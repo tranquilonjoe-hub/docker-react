@@ -1,0 +1,24 @@
+name: React tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      #pulls the code
+      - uses: actions/checkout@v4
+
+      #Builds the test image
+      - run: docker build -t react-test -f Dockerfile.dev .
+
+      #Runs the tests
+      - run: docker run -e CI=true react-test npm test
+
+
