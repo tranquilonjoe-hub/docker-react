@@ -4,6 +4,7 @@ COPY package.json .
 RUN npm install
 COPY . .
 ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV DISABLE_ESLINT_PLUGIN=true
 RUN npm run build
 
 FROM nginx
