@@ -4,21 +4,35 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      #pulls the code
       - uses: actions/checkout@v4
 
-      #Builds the test image
-      - run: docker build -t tranquilonjoe_hub/react-test -f Dockerfile.dev .
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      #Runs the tests
-      - run: docker run -e CI=true tranquilonjoe_hub/react-test npm test
+      - run: docker build -t tranquilonjoedock/react-test -f Dockerfile.dev .
+      - run: docker run -e CI=true tranquilonjoedock/react-test npm test
+
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          application_name: Frontend
+          environment_name: Frontend-env
+          existing_bucket_name: elasticbeanstalk-us-west-2-955317918936
+          region: us-west-2
+          version_label: ${{ github.sha }}
+          deployment_package: deploy.zip
 
 
