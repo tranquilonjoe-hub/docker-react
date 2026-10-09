@@ -4,11 +4,23 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main  # Triggers when a PR is opened/updated
 
 jobs:
-  build:
+  test_code:
+    # Runs on both PRs and merges
     runs-on: ubuntu-latest
     steps:
+      - run: npm test
+
+  deploy_to_aws:
+    if: github.event_name == 'push'
+    needs: test_code
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying to Elastic Beanstalk..."
       - uses: actions/checkout@v4
 
       - name: Docker Login
