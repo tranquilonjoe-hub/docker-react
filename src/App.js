@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Hi m back boys, Nirmal Jose.
+          Login Page Feature will be added shortly.
         </a>
       </header>
     </div>
